@@ -1,0 +1,581 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:healthly/dbHelper/addData.dart';
+import 'package:healthly/dbHelper/searchData.dart';
+import 'package:healthly/models/activeAppointmentModel.dart';
+import 'package:healthly/models/doctorModel.dart';
+import 'package:healthly/models/hospitalModel.dart';
+import 'package:healthly/models/departmentModel.dart';
+import 'package:healthly/models/userModel.dart';
+import 'package:healthly/screens/showAppointmentTimes.dart';
+import 'package:healthly/screens/showDoctors.dart';
+import 'package:healthly/screens/showHospitals.dart';
+import 'package:healthly/screens/showDepartments.dart';
+import 'package:flutter/material.dart';
+
+class MakeAppointment extends StatefulWidget {
+  final User user;
+
+  MakeAppointment(this.user);
+
+  @override
+  MakeAppointmentState createState() => MakeAppointmentState(user);
+}
+
+class MakeAppointmentState extends State<MakeAppointment> {
+  bool control1 = false;
+
+  MakeAppointmentState(this.user);
+
+  bool hospitalSelected = false;
+  bool departmentSelected = false;
+  bool doctorSelected = false;
+  bool dateSelected = false;
+  late bool appointmentControl1;
+  late bool appointmentControl2;
+
+  double drImage = 0.0;
+  double image = 0.0;
+
+  Hospital hospital = Hospital.empty();
+  Department department = Department.empty();
+  Doctor doctor = Doctor.empty();
+  User user = User.empty();
+
+  String textMessage = " ";
+
+  var appointmentDate;
+  var raisedButtonText = "Click and Select";
+
+  var timeDatejoint;
+
+  double imageHour = 0.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "Make an appointment",
+            style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.only(top: 20.0, left: 9.0, right: 9.0),
+                child: Form(
+                  child: Column(
+                    children: <Widget>[
+                      ElevatedButton(
+                        child: Text("Click to Select Hospital"),
+                        onPressed: () {
+                          departmentSelected = false;
+                          doctorSelected = false;
+                          dateSelected = false;
+                          hospitalNavigator(BuildHospitalList());
+                        },
+                      ),
+                      SizedBox(height: 13.0),
+                      showSelectedHospital(hospitalSelected),
+                      SizedBox(
+                        height: 30.0,
+                      ),
+                      ElevatedButton(
+                        child: Text("Click to Select department"),
+                        onPressed: () {
+                          if (hospitalSelected) {
+                            doctorSelected = false;
+                            drImage = 0.0;
+                            dateSelected = false;
+                            departmentNavigator(BuildDepartmentList(hospital));
+                          } else {
+                            alrtHospital(
+                                context,
+                                "You cannot select a department without selecting a hospital");
+                          }
+                        },
+                      ),
+                      SizedBox(
+                        height: 16.0,
+                      ),
+                      _showSelectedDepartment(departmentSelected),
+                      SizedBox(
+                        height: 30.0,
+                      ),
+                      ElevatedButton(
+                        child: Text("Click to Select Doctor"),
+                        onPressed: () {
+                          if (hospitalSelected && departmentSelected) {
+                            doctorNavigator(BuildDoctorList(department, hospital));
+                          } else {
+                            alrtHospital(context,
+                                "You cannot choose a doctor without choosing a hospital and department");
+                          }
+                        },
+                      ),
+                      SizedBox(
+                        height: 16.0,
+                      ),
+                      showSelectedDoctor(doctorSelected),
+                      SizedBox(
+                        height: 25.0,
+                      ),
+                      dateOfAppointment(),
+                      SizedBox(
+                        height: 16.0,
+                      ),
+                      ElevatedButton(
+                        child: Text("Click to Select Appointment Time"),
+                        onPressed: () {
+                          if (appointmentDate != null &&
+                              hospitalSelected &&
+                          departmentSelected &&
+                          doctorSelected) {
+                            basicNavigator(AppointmentTimes(
+                                appointmentDate.toString(), doctor));
+                            dateSelected = true;
+                          } else {
+                            alrtHospital(context,
+                                "Time selection cannot be started until the above selections are completed");
+                          }
+                        },
+                      ),
+                      SizedBox(
+                        height: 16.0,
+                      ),
+                      showSelectedDate(dateSelected),
+                      SizedBox(
+                        height: 16.0,
+                      ),
+                      _buildDoneButton()
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ));
+  }
+
+  void hospitalNavigator(dynamic page) async {
+    hospital = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => page));
+
+    if (hospital == null) {
+      hospitalSelected = false;
+    } else {
+      hospitalSelected = true;
+      alrtAppointmentForFav(context, hospital);
+    }
+  }
+
+  showSelectedHospital(bool selected) {
+    String textMessage = " ";
+    if (selected) {
+      setState(() {
+        textMessage = this.hospital.hospitalName.toString();
+      });
+      image = 1.0;
+    } else {
+      image = 0.0;
+    }
+
+    return Container(
+        decoration: BoxDecoration(),
+        child: Row(
+          children: <Widget>[
+            Text(
+              "Selected Hospital : ",
+              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            ),
+            Opacity(
+                opacity: image,
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Text(
+                    textMessage,
+                    style:
+                    TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  ),
+                ))
+          ],
+        ));
+  }
+
+  void alrtHospital(BuildContext context, String message) {
+    var alertDoctor = AlertDialog(
+      title: Text(
+        "Warning!",
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      content: Text(message),
+    );
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alertDoctor;
+        });
+  }
+
+  void departmentNavigator(dynamic page) async {
+    department = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => page));
+
+    if (department == null) {
+      departmentSelected = false;
+    } else {
+      departmentSelected = true;
+    }
+  }
+
+  _showSelectedDepartment(bool selected) {
+    double image = 0.0;
+
+    if (selected) {
+      setState(() {
+        textMessage = this.department.departmentName.toString();
+      });
+      image = 1.0;
+    } else {
+      image = 0.0;
+    }
+
+    return Container(
+        decoration: BoxDecoration(),
+        child: Row(
+          children: <Widget>[
+            Text(
+              "Selected Department : ",
+              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            ),
+           Opacity(
+                opacity: image,
+                child: Container(
+                    alignment: Alignment.center,
+                    child: _buildTextMessage(textMessage)))
+          ],
+        ));
+  }
+
+  _buildTextMessage(String incomingText) {
+    return Text(
+      textMessage,
+      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+    );
+  }
+
+  void doctorNavigator(dynamic page) async {
+    doctor = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => page));
+
+    if (doctor == null) {
+      doctorSelected = false;
+    } else {
+      doctorSelected = true;
+    }
+  }
+
+  showSelectedDoctor(bool selectedMih) {
+    String textMessage = " ";
+    if (selectedMih) {
+      setState(() {
+        textMessage = this.doctor.name.toString() + " " + this.doctor.surname;
+      });
+      drImage = 1.0;
+    } else {
+      drImage = 0.0;
+    }
+
+    return Container(
+        decoration: BoxDecoration(),
+        child: Row(
+          children: <Widget>[
+            Text(
+              "The Chosen Doctor : ",
+              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            ),
+            Opacity(
+                opacity: image,
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Text(
+                    textMessage,
+                    style:
+                    TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  ),
+                ))
+          ],
+        ));
+  }
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().add(Duration(days: 1)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2021),
+    );
+    appointmentDate = picked;
+    timeDatejoint = null;
+    dateSelected = false;
+  }
+
+  Widget dateOfAppointment() {
+    return Container(
+      padding: EdgeInsets.only(top: 5.0),
+      child: Row(
+        children: <Widget>[
+          Text(
+            "Appointment date: ",
+            style: TextStyle(fontSize: 19.0),
+          ),
+          ElevatedButton(
+            child: Text(raisedButtonText),
+            onPressed: () {
+              _selectDate(context).then((result) =>
+                  setState(() {
+                    if (appointmentDate == null) {
+                      raisedButtonText = "Click and Select";
+                      dateSelected = false;
+                    } else {
+                      raisedButtonText =
+                          appointmentDate.toString().substring(0, 10);
+                    }
+                  }));
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  showSelectedDate(bool dateSelected) {
+    String textMessage = " ";
+    if (dateSelected) {
+      setState(() {
+        textMessage = timeDatejoint.toString();
+      });
+      imageHour = 1.0;
+    } else {
+      imageHour = 0.0;
+    }
+
+    return Container(
+        decoration: BoxDecoration(),
+        child: Row(
+          children: <Widget>[
+            Text(
+              "Appointment Date and Time : ",
+              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            ),
+            Opacity(
+                opacity: imageHour,
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Text(
+                    textMessage,
+                    style:
+                    TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  ),
+                ))
+          ],
+        ));
+  }
+
+  void basicNavigator(dynamic page) async {
+    timeDatejoint = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => page));
+  }
+
+  void alrtAppointment(BuildContext context) {
+    var alertAppointment = AlertDialog(
+        contentPadding: const EdgeInsets.fromLTRB(5.0, 50.0, 5.0, 50.0),
+        title: Text(
+          "Transaction Summary",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Container(
+          padding: EdgeInsets.only(bottom: 50.0),
+          child: Column(
+            children: <Widget>[
+              showSelectedHospital(hospitalSelected),
+              _showSelectedDepartment(departmentSelected),
+              showSelectedDoctor(doctorSelected),
+              showSelectedDate(dateSelected),
+              SizedBox(
+                height: 13.0,
+              ),
+              Container(
+                child: FlatButton(
+                  child: Text(
+                    "OK",
+                    style:
+                    TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context, true);
+                    AddService().addDoctorAppointment(doctor);
+                    AddService().addActiveAppointment(
+                        doctor, user, timeDatejoint);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ));
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alertAppointment;
+        });
+  }
+
+  //fav part
+  void alrtAppointmentForFav(BuildContext context, Hospital hospital) {
+    if (hospitalSelected) {
+      var alertAppointment = AlertDialog(
+        contentPadding: const EdgeInsets.fromLTRB(5.0, 50.0, 5.0, 50.0),
+        title: Text(
+          "Hospital's Popular Doctors",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Scaffold(body: _buildStremBuilderForFav(context, hospital)),
+      );
+
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return alertAppointment;
+          });
+    }
+  }
+
+  _buildStremBuilderForFav(BuildContext context, Hospital hospital) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection("tblDoctor")
+          .where('hospitalId', isEqualTo: hospital.hospitalId)
+          .orderBy('favoriteCounter', descending: true)
+          .limit(5)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return LinearProgressIndicator();
+        } else {
+          return _buildBodyForFav(context, snapshot.data!.docs);
+        }
+      },
+    );
+  }
+
+  Widget _buildBodyForFav(BuildContext context,
+      List<DocumentSnapshot> snapshot) {
+    return ListView(
+      padding: EdgeInsets.only(top: 15.0),
+      children: snapshot
+          .map<Widget>((data) => _buildListItemForFav(context, data))
+          .toList(),
+    );
+  }
+
+  _buildListItemForFav(BuildContext context, DocumentSnapshot data) {
+    final doctor = Doctor.fromSnapshot(data);
+    String gender = (doctor.name + " " + doctor.surname);
+    return Padding(
+      key: ValueKey(doctor.idNo),
+      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(10.0)),
+        child: ListTile(
+          title: Text(gender),
+          onTap: () {},
+        ),
+      ),
+    );
+  }
+
+  _buildDoneButton() {
+    return Container(
+      child: ElevatedButton(
+        child: Text("Complete"),
+        onPressed: () {
+          if (hospitalSelected &&
+              departmentSelected &&
+          dateSelected &&
+          dateSelected &&
+          timeDatejoint != null) {
+            SearchService()
+                .searchDoctorAppointment(doctor, timeDatejoint)
+                .then((QuerySnapshot docs) {
+              if (docs.docs.isEmpty) {
+                SearchService()
+                    .searchActiveAppointmentsByPatientTCKN(user.idNo)
+                    .then((QuerySnapshot docs) {
+                  if (docs.docs.isNotEmpty) {
+                    for (var i = 0; i < docs.docs.length; i++) {
+                      ActiveAppointment rand =
+                      ActiveAppointment.fromMap(docs.docs[i].data() as Map<
+                          String,
+                          dynamic>);
+                      if (rand.appointmentDate.contains(timeDatejoint)) {
+                        alrtHospital(context,
+                            "You cannot have an appointment with 2 different doctors on the same day and time");
+                        break;
+                      } else {
+                        control1 = true;
+                      }
+                    }
+                  } else {
+                    control1 = true;
+                  }
+                  if (control1) {
+                    SearchService()
+                        .searchActiveAppointmentsWithPatientTCKNAndDoctorTCKN(
+                        user.idNo, doctor.idNo)
+                        .then((QuerySnapshot docs) {
+                      if (docs.docs.isNotEmpty) {
+                        for (var i = 0; i <= docs.docs.length; i++) {
+                          ActiveAppointment rand =
+                          ActiveAppointment.fromMap(
+                              docs.docs[i].data() as Map<String, dynamic>);
+                          if (rand.appointmentDate.contains(
+                              appointmentDate.toString().substring(0, 10))) {
+                            alrtHospital(context,
+                                "You cannot have 2 appointments with the same doctor in a day");
+                            break;
+                          } else {
+                            alrtAppointment(context);
+                            doctor.appointments.add(timeDatejoint);
+                          }
+                        }
+                      } else {
+                        alrtAppointment(context);
+                        doctor.appointments.add(timeDatejoint);
+                      }
+                    });
+                  }
+                });
+              } else {
+                alrtHospital(context, "This session is full");
+              }
+            });
+          } else {
+            alrtHospital(context, "Missing information");
+          }
+        },
+      ),
+    );
+  }
+
+  // checks if the user has another doctor appointment on the same day and time.
+  buildAppointmentControl1() {}
+
+  // checks whether the user has an appointment with the same doctor during the day.
+  buildAppointmentControl2() {}
+}
