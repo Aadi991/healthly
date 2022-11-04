@@ -26,11 +26,11 @@ class _BuildAppointmentListState extends State<BuildAppointmentListForDoctor> {
       appBar: AppBar(
         title: Text("Pending Appointments"),
       ),
-      body: _buildStremBuilder(context),
+      body: _buildStreamBuilder(context),
     );
   }
 
-  _buildStremBuilder(BuildContext context) {
+  _buildStreamBuilder(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection("tblActiveAppointment")

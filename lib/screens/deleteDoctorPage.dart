@@ -31,7 +31,7 @@ class DeleteDoctorState extends State {
       backgroundColor: Colors.blueAccent,
       appBar: AppBar(
         title: Text(
-          "Doctor Erase Screen",
+          "Doctor Delete Screen",
           style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
         ),
       ),
@@ -65,8 +65,8 @@ class DeleteDoctorState extends State {
                           doctorSelected = false;
                           departmentNavigator(BuildDepartmentList(hospital));
                         } else {
-                          alrtHospital(
-                              context, "You cannot select a department without selecting a hospital");
+                          alrtHospital(context,
+                              "You cannot select a department without selecting a hospital");
                         }
                       },
                     ),
@@ -81,7 +81,8 @@ class DeleteDoctorState extends State {
                       child: Text("Click to Select Doctor"),
                       onPressed: () {
                         if (hospitalSelected && departmentSelected) {
-                          doctorNavigator(BuildDoctorList(department, hospital));
+                          doctorNavigator(
+                              BuildDoctorList(department, hospital));
                         } else {
                           alrtHospital(context,
                               "You cannot choose a doctor without choosing a hospital and department");
@@ -124,9 +125,13 @@ class DeleteDoctorState extends State {
         context, MaterialPageRoute(builder: (context) => page));
 
     if (hospital == null) {
-      hospitalSelected = false;
+      setState(() {
+        hospitalSelected = false;
+      });
     } else {
-      hospitalSelected = true;
+      setState(() {
+        hospitalSelected = true;
+      });
     }
   }
 
@@ -135,9 +140,13 @@ class DeleteDoctorState extends State {
         context, MaterialPageRoute(builder: (context) => page));
 
     if (department == null) {
-      departmentSelected = false;
+      setState(() {
+        departmentSelected = false;
+      });
     } else {
-      departmentSelected = true;
+      setState(() {
+        departmentSelected = true;
+      });
     }
   }
 
@@ -154,24 +163,24 @@ class DeleteDoctorState extends State {
 
     return Container(
         decoration: BoxDecoration(),
-    child: Row(
-    children: <Widget>[
-    Text(
-    "Chosen Hospital : ",
-    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-    ),
-      Opacity(
-          opacity: image,
-          child: Container(
-            alignment: Alignment.center,
-            child: Text(
-              textMessage,
-              style:
-              TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+        child: Row(
+          children: <Widget>[
+            Text(
+              "Chosen Hospital : ",
+              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
             ),
-          ))
-    ],
-    ));
+            Opacity(
+                opacity: image,
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Text(
+                    textMessage,
+                    style:
+                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  ),
+                ))
+          ],
+        ));
   }
 
   _showSelectedDepartment(bool selected) {
@@ -226,10 +235,14 @@ class DeleteDoctorState extends State {
     if (selectedMih) {
       setState(() {
         textMessage = this.doctor.name.toString() + " " + this.doctor.surname;
+        drImage = 1.0;
       });
-      drImage = 1.0;
+
     } else {
-      drImage = 0.0;
+      setState(() {
+
+        drImage = 0.0;
+      });
     }
 
     return Container(
@@ -247,7 +260,7 @@ class DeleteDoctorState extends State {
                   child: Text(
                     textMessage,
                     style:
-                    TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                   ),
                 ))
           ],

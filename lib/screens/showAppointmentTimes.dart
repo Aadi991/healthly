@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class AppointmentTimes extends StatefulWidget {
   final String appointmentDate;
   final doctor;
+
   AppointmentTimes(this.appointmentDate, this.doctor);
 
   @override
@@ -34,8 +35,7 @@ class _AppointmentTimesState extends State<AppointmentTimes> {
   void initState() {
     super.initState();
     for (var item in hours) {
-      union
-          .add((appointmentDate.toString().substring(0, 10) + item).toString());
+      union.add((appointmentDate.toString().substring(0, 10) + item).toString());
     }
     for (var i = 0; i < union.length; i++) {
       if (doctor.appointments.contains(union[i])) {
@@ -55,7 +55,7 @@ class _AppointmentTimesState extends State<AppointmentTimes> {
           title: Text("Appointment Hours"),
         ),
         body: Container(
-          padding: EdgeInsets.only(top: 50.0, left: 25.0, right:30.0),
+          padding: EdgeInsets.only(top: 50.0, left: 25.0, right: 30.0),
           child: Column(
             children: <Widget>[
               Container(
@@ -78,62 +78,14 @@ class _AppointmentTimesState extends State<AppointmentTimes> {
   }
 
   chooserTime() {
-    return Column(
-      children: <Widget>[
-        Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              _buildText("09:00"),
-              _buildButton(0, result),
-              _buildText("10:00"),
-              _buildButton(1, result),
-            ],
-          ),
-        ),
-        Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              _buildText("11:00"),
-              SizedBox(
-                width: 20.0,
-              ),
-              _buildButton(2, result),
-            ],
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.only(top: 13.0, bottom: 13.0),
-          child: Text(
-            "Lunch Break",
-            style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
-          ),
-        ),
-        Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              _buildText("13:00"),
-              _buildButton(3, result),
-              _buildText("14:00"),
-              _buildButton(4, result),
-            ],
-          ),
-        ),
-        Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              _buildText("15:00"),
-              _buildButton(5, result),
-              _buildText("16:00"),
-              _buildButton(6, result),
-            ],
-          ),
-        ),
-      ],
-    );
+    return ListView.builder(itemBuilder: (context,position){
+      return Row(
+        children: [
+          ListTile(title: Text(hours[position]),),
+          _buildButton(position, "select")
+        ],
+      );
+    });
   }
 
   _buildText(String time) {

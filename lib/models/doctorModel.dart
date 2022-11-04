@@ -77,8 +77,8 @@ class Doctor {
   Doctor.fromMap(Map<String, dynamic> map, {this.reference})
       : idNo = map["idNo"],
         password = map["password"],
-        name = map["ad"],
-        surname = map["soyad"],
+        name = map["name"],
+        surname = map["surname"],
         departmentId = map["departmentId"],
         hospitalId = map["hospitalId"],
         appointments = List.from(map["appointments"]),

@@ -90,8 +90,7 @@ class MakeAppointmentState extends State<MakeAppointment> {
                             dateSelected = false;
                             departmentNavigator(BuildDepartmentList(hospital));
                           } else {
-                            alrtHospital(
-                                context,
+                            alrtHospital(context,
                                 "You cannot select a department without selecting a hospital");
                           }
                         },
@@ -107,7 +106,8 @@ class MakeAppointmentState extends State<MakeAppointment> {
                         child: Text("Click to Select Doctor"),
                         onPressed: () {
                           if (hospitalSelected && departmentSelected) {
-                            doctorNavigator(BuildDoctorList(department, hospital));
+                            doctorNavigator(
+                                BuildDoctorList(department, hospital));
                           } else {
                             alrtHospital(context,
                                 "You cannot choose a doctor without choosing a hospital and department");
@@ -130,8 +130,8 @@ class MakeAppointmentState extends State<MakeAppointment> {
                         onPressed: () {
                           if (appointmentDate != null &&
                               hospitalSelected &&
-                          departmentSelected &&
-                          doctorSelected) {
+                              departmentSelected &&
+                              doctorSelected) {
                             basicNavigator(AppointmentTimes(
                                 appointmentDate.toString(), doctor));
                             dateSelected = true;
@@ -163,9 +163,13 @@ class MakeAppointmentState extends State<MakeAppointment> {
         context, MaterialPageRoute(builder: (context) => page));
 
     if (hospital == null) {
-      hospitalSelected = false;
+      setState(() {
+        hospitalSelected = false;
+      });
     } else {
-      hospitalSelected = true;
+      setState(() {
+        hospitalSelected = true;
+      });
       alrtAppointmentForFav(context, hospital);
     }
   }
@@ -175,10 +179,12 @@ class MakeAppointmentState extends State<MakeAppointment> {
     if (selected) {
       setState(() {
         textMessage = this.hospital.hospitalName.toString();
+        image = 1.0;
       });
-      image = 1.0;
     } else {
-      image = 0.0;
+      setState(() {
+        image = 0.0;
+      });
     }
 
     return Container(
@@ -196,7 +202,7 @@ class MakeAppointmentState extends State<MakeAppointment> {
                   child: Text(
                     textMessage,
                     style:
-                    TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                   ),
                 ))
           ],
@@ -224,9 +230,13 @@ class MakeAppointmentState extends State<MakeAppointment> {
         context, MaterialPageRoute(builder: (context) => page));
 
     if (department == null) {
-      departmentSelected = false;
+      setState(() {
+        departmentSelected = false;
+      });
     } else {
-      departmentSelected = true;
+      setState(() {
+        departmentSelected = true;
+      });
     }
   }
 
@@ -250,7 +260,7 @@ class MakeAppointmentState extends State<MakeAppointment> {
               "Selected Department : ",
               style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
             ),
-           Opacity(
+            Opacity(
                 opacity: image,
                 child: Container(
                     alignment: Alignment.center,
@@ -271,9 +281,13 @@ class MakeAppointmentState extends State<MakeAppointment> {
         context, MaterialPageRoute(builder: (context) => page));
 
     if (doctor == null) {
-      doctorSelected = false;
+      setState(() {
+        doctorSelected = false;
+      });
     } else {
-      doctorSelected = true;
+      setState(() {
+        doctorSelected = true;
+      });
     }
   }
 
@@ -282,10 +296,12 @@ class MakeAppointmentState extends State<MakeAppointment> {
     if (selectedMih) {
       setState(() {
         textMessage = this.doctor.name.toString() + " " + this.doctor.surname;
+        drImage = 1.0;
       });
-      drImage = 1.0;
     } else {
-      drImage = 0.0;
+      setState(() {
+        drImage = 0.0;
+      });
     }
 
     return Container(
@@ -303,7 +319,7 @@ class MakeAppointmentState extends State<MakeAppointment> {
                   child: Text(
                     textMessage,
                     style:
-                    TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                   ),
                 ))
           ],
@@ -315,7 +331,7 @@ class MakeAppointmentState extends State<MakeAppointment> {
       context: context,
       initialDate: DateTime.now().add(Duration(days: 1)),
       firstDate: DateTime.now(),
-      lastDate: DateTime(2021),
+      lastDate: DateTime(2023),
     );
     appointmentDate = picked;
     timeDatejoint = null;
@@ -334,8 +350,7 @@ class MakeAppointmentState extends State<MakeAppointment> {
           ElevatedButton(
             child: Text(raisedButtonText),
             onPressed: () {
-              _selectDate(context).then((result) =>
-                  setState(() {
+              _selectDate(context).then((result) => setState(() {
                     if (appointmentDate == null) {
                       raisedButtonText = "Click and Select";
                       dateSelected = false;
@@ -377,7 +392,7 @@ class MakeAppointmentState extends State<MakeAppointment> {
                   child: Text(
                     textMessage,
                     style:
-                    TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                   ),
                 ))
           ],
@@ -412,14 +427,14 @@ class MakeAppointmentState extends State<MakeAppointment> {
                   child: Text(
                     "OK",
                     style:
-                    TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
                     Navigator.pop(context, true);
                     AddService().addDoctorAppointment(doctor);
-                    AddService().addActiveAppointment(
-                        doctor, user, timeDatejoint);
+                    AddService()
+                        .addActiveAppointment(doctor, user, timeDatejoint);
                   },
                 ),
               ),
@@ -472,8 +487,8 @@ class MakeAppointmentState extends State<MakeAppointment> {
     );
   }
 
-  Widget _buildBodyForFav(BuildContext context,
-      List<DocumentSnapshot> snapshot) {
+  Widget _buildBodyForFav(
+      BuildContext context, List<DocumentSnapshot> snapshot) {
     return ListView(
       padding: EdgeInsets.only(top: 15.0),
       children: snapshot
@@ -507,9 +522,9 @@ class MakeAppointmentState extends State<MakeAppointment> {
         onPressed: () {
           if (hospitalSelected &&
               departmentSelected &&
-          dateSelected &&
-          dateSelected &&
-          timeDatejoint != null) {
+              dateSelected &&
+              dateSelected &&
+              timeDatejoint != null) {
             SearchService()
                 .searchDoctorAppointment(doctor, timeDatejoint)
                 .then((QuerySnapshot docs) {
@@ -519,10 +534,8 @@ class MakeAppointmentState extends State<MakeAppointment> {
                     .then((QuerySnapshot docs) {
                   if (docs.docs.isNotEmpty) {
                     for (var i = 0; i < docs.docs.length; i++) {
-                      ActiveAppointment rand =
-                      ActiveAppointment.fromMap(docs.docs[i].data() as Map<
-                          String,
-                          dynamic>);
+                      ActiveAppointment rand = ActiveAppointment.fromMap(
+                          docs.docs[i].data() as Map<String, dynamic>);
                       if (rand.appointmentDate.contains(timeDatejoint)) {
                         alrtHospital(context,
                             "You cannot have an appointment with 2 different doctors on the same day and time");
@@ -537,12 +550,11 @@ class MakeAppointmentState extends State<MakeAppointment> {
                   if (control1) {
                     SearchService()
                         .searchActiveAppointmentsWithPatientTCKNAndDoctorTCKN(
-                        user.idNo, doctor.idNo)
+                            user.idNo, doctor.idNo)
                         .then((QuerySnapshot docs) {
                       if (docs.docs.isNotEmpty) {
                         for (var i = 0; i <= docs.docs.length; i++) {
-                          ActiveAppointment rand =
-                          ActiveAppointment.fromMap(
+                          ActiveAppointment rand = ActiveAppointment.fromMap(
                               docs.docs[i].data() as Map<String, dynamic>);
                           if (rand.appointmentDate.contains(
                               appointmentDate.toString().substring(0, 10))) {

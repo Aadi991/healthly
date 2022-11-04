@@ -11,8 +11,7 @@ class DelService {
   // This method delete a doctor also her / his active appoit
   deleteDoctorbyTCKN(Doctor doctor) {
     FirebaseFirestore.instance
-        .collection("tblDoctor")
-        .doc(doctor.reference?.path)
+        .doc(doctor.reference!.path)
         .delete();
     FirebaseFirestore.instance
         .collection("tblActiveAppointment")
@@ -46,7 +45,6 @@ class DelService {
 
   deleteDepartmentByDepartmentId(Department department, var reference) {
     FirebaseFirestore.instance
-        .collection("tblDepartment")
         .doc(reference.path)
         .delete();
     FirebaseFirestore.instance

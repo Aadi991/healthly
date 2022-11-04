@@ -13,12 +13,12 @@ class DeleteDepartment extends StatefulWidget {
 }
 
 class DeleteDepartmentState extends State {
-  Hospital hastane = Hospital.empty();
+  Hospital hospital = Hospital.empty();
   Department department = Department.empty();
-  bool hastaneSecildiMi = false;
-  bool bolumSecildiMi = false;
+  bool hospitalSelected = false;
+  bool departmentSelected = false;
   String textMessage = " ";
-  double goruntu = 0.0;
+  double image = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class DeleteDepartmentState extends State {
       backgroundColor: Colors.blueAccent,
       appBar: AppBar(
         title: Text(
-          "Bölüm Silme Ekranı",
+          "Partition Deletion Screen",
           style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
         ),
       ),
@@ -52,7 +52,7 @@ class DeleteDepartmentState extends State {
                     ),
                     Container(
                       child: Text(
-                        "Bir bölüm sildiğinizde, o bölümde çalışan doktorları ve o doktorların appointmentsını da silmiş olacaksınız.",
+                        "When you delete a department, you will also delete the doctors working in that department and their appointments.",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20.0),
                       ),
@@ -61,38 +61,38 @@ class DeleteDepartmentState extends State {
                       height: 13.0,
                     ),
                     ElevatedButton(
-                      child: Text("Hastane Seçmek İçin Tıkla"),
+                      child: Text("Click to Select Hospital"),
                       onPressed: () {
-                        bolumSecildiMi = false;
+                        departmentSelected = false;
                         hospitalNavigator(BuildHospitalList());
                       },
                     ),
                     SizedBox(
                       height: 16.0,
                     ),
-                    showSelectedHospital(hastaneSecildiMi),
+                    showSelectedHospital(hospitalSelected),
                     SizedBox(
                       height: 16.0,
                     ),
                     ElevatedButton(
-                      child: Text("Bölüm Seçmek İçin Tıkla"),
+                      child: Text("Click to Select Chapter"),
                       onPressed: () {
-                        if (hastaneSecildiMi) {
-                          departmentNavigator(BuildDepartmentList(hastane));
+                        if (hospitalSelected) {
+                          departmentNavigator(BuildDepartmentList(hospital));
                         } else {
-                          alrtHospital(
-                              context, "Hastane seçmeden bölüm seçemezsiniz");
+                          alrtHospital(context,
+                              "You cannot select a department without selecting a hospital");
                         }
                       },
                     ),
                     SizedBox(
                       height: 16.0,
                     ),
-                    _showSelectedDepartment(bolumSecildiMi),
+                    _showSelectedDepartment(departmentSelected),
                     SizedBox(
                       height: 16.0,
                     ),
-                    _silButonu()
+                    _deleteButton()
                   ],
                 ),
               ),
@@ -105,7 +105,7 @@ class DeleteDepartmentState extends State {
 
   void alrtHospital(BuildContext context, String message) {
     var alertDoctor = AlertDialog(
-      title: Text("Uyarı!"),
+      title: Text("Warning!"),
       content: Text(message),
     );
 
@@ -117,13 +117,17 @@ class DeleteDepartmentState extends State {
   }
 
   void hospitalNavigator(dynamic page) async {
-    hastane = await Navigator.push(
+    hospital = await Navigator.push(
         context, MaterialPageRoute(builder: (context) => page));
 
-    if (hastane == null) {
-      hastaneSecildiMi = false;
+    if (hospital == null) {
+      setState(() {
+        hospitalSelected = false;
+      });
     } else {
-      hastaneSecildiMi = true;
+      setState(() {
+        hospitalSelected = true;
+      });
     }
   }
 
@@ -132,21 +136,25 @@ class DeleteDepartmentState extends State {
         context, MaterialPageRoute(builder: (context) => page));
 
     if (department == null) {
-      bolumSecildiMi = false;
+      setState(() {
+        departmentSelected = false;
+      });
     } else {
-      bolumSecildiMi = true;
+      setState(() {
+        departmentSelected  = true;
+      });
     }
   }
 
-  showSelectedHospital(bool secildiMi) {
+  showSelectedHospital(bool selected) {
     String textMessage = " ";
-    if (secildiMi) {
+    if (selected) {
       setState(() {
-        textMessage = this.hastane.hospitalName.toString();
+        textMessage = this.hospital.hospitalName.toString();
       });
-      goruntu = 1.0;
+      image = 1.0;
     } else {
-      goruntu = 0.0;
+      image = 0.0;
     }
 
     return Container(
@@ -154,11 +162,11 @@ class DeleteDepartmentState extends State {
         child: Row(
           children: <Widget>[
             Text(
-              "Seçilen Hastane : ",
+              "Selected Hospital : ",
               style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
             ),
             Opacity(
-                opacity: goruntu,
+                opacity: image,
                 child: Container(
                   alignment: Alignment.center,
                   child: Text(
@@ -171,16 +179,16 @@ class DeleteDepartmentState extends State {
         ));
   }
 
-  _showSelectedDepartment(bool secildiMi) {
-    double goruntu = 0.0;
+  _showSelectedDepartment(bool selected) {
+    double image = 0.0;
 
-    if (secildiMi) {
+    if (selected) {
       setState(() {
         textMessage = this.department.departmentName.toString();
       });
-      goruntu = 1.0;
+      image = 1.0;
     } else {
-      goruntu = 0.0;
+      image = 0.0;
     }
 
     return Container(
@@ -188,11 +196,11 @@ class DeleteDepartmentState extends State {
         child: Row(
           children: <Widget>[
             Text(
-              "Seçilen Bölüm : ",
+              "Selected Department: ",
               style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
             ),
             Opacity(
-                opacity: goruntu,
+                opacity: image,
                 child: Container(
                     alignment: Alignment.center,
                     child: _buildTextMessage(textMessage)))
@@ -200,39 +208,39 @@ class DeleteDepartmentState extends State {
         ));
   }
 
-  _buildTextMessage(String gelenText) {
+  _buildTextMessage(String incomingText) {
     return Text(
       textMessage,
       style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
     );
   }
 
-  _silButonu() {
+  _deleteButton() {
     return ElevatedButton(
       child: Text(
-        "Seçili Bölümü Sil",
+        "Delete Selected Section",
         textDirection: TextDirection.ltr,
         style: TextStyle(fontSize: 20.0),
       ),
       onPressed: () {
-        if (hastaneSecildiMi && bolumSecildiMi) {
-          alrtBolumSil(context);
+        if (hospitalSelected && departmentSelected) {
+          alrtSectionDelete(context);
         } else {
-          alrtHospital(context, "Eksik bilgi var");
+          alrtHospital(context, "Missing information");
         }
       },
     );
   }
 
-  void alrtBolumSil(BuildContext context) {
-    var alrtRandevu = AlertDialog(
+  void alrtSectionDelete(BuildContext context) {
+    var alrtAppointment = AlertDialog(
       title: Text(
-        " Bölüm ile birlikte bölüme kayıtlı bütün doktorlar ve appointmentsıda silinecektir. Devam etmek istiyor musunuz?",
+        " Along with the department, all doctors registered to the department and their appointments will be deleted. Do you want to continue?",
         style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
         FlatButton(
-          child: Text("Hayır"),
+          child: Text("No"),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -242,11 +250,12 @@ class DeleteDepartmentState extends State {
         ),
         FlatButton(
           child: Text(
-            "Evet",
+            "Yes",
             textAlign: TextAlign.center,
           ),
           onPressed: () {
-            DelService().deleteDepartmentByDepartmentId(department, department.reference);
+            DelService().deleteDepartmentByDepartmentId(
+                department, department.reference);
             Navigator.pop(context);
             Navigator.pop(context, true);
           },
@@ -257,7 +266,7 @@ class DeleteDepartmentState extends State {
     showDialog(
         context: context,
         builder: (BuildContext context) {
-          return alrtRandevu;
+          return alrtAppointment;
         });
   }
 }

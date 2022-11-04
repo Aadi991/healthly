@@ -20,7 +20,7 @@ class UpdateService {
   // String updateUserFavList(String idNo, String doctorNameSurname) {
   // Usertemp;
   // SearchService().searchUserById(idNo).then((QuerySnapshot docs) {
-  // temp = User.fromMap( docs.docs[0].data as Map<String,dynamic>);
+  // temp = User.fromMap( docs.docs[0].data() as Map<String,dynamic>);
   // temp.reference = docs.docs[0].reference;
   // if (!temp.favoriteDoctors.contains(doctorNameSurname)) {
   // temp.favoriteDoctors.add(doctorNameSurname);
@@ -37,8 +37,7 @@ class UpdateService {
 
   String updateDoctor(Doctor doctor) {
     FirebaseFirestore.instance
-        .collection("tblDoctor")
-        .doc(doctor.reference?.path)
+        .doc(doctor.reference!.path)
         .update({
       'id': doctor.name,
       'password': doctor.password.toString(),
@@ -50,7 +49,7 @@ class UpdateService {
   String updateDoctorFavCountPlus(String doctorNo) {
     Doctor doctor;
     SearchService().searchDoctorById(doctorNo).then((QuerySnapshot docs) {
-      doctor = Doctor.fromMap( docs.docs[0].data as Map<String,dynamic>);
+      doctor = Doctor.fromMap( docs.docs[0].data() as Map<String,dynamic>);
       doctor.reference = docs.docs[0].reference;
       FirebaseFirestore.instance
           .collection("tblDoctor")
@@ -64,7 +63,7 @@ class UpdateService {
   String updateDoctorFavCountMinus(String doctorNo) {
     Doctor doctor;
     SearchService().searchDoctorById(doctorNo).then((QuerySnapshot docs) {
-      doctor = Doctor.fromMap( docs.docs[0].data as Map<String,dynamic>);
+      doctor = Doctor.fromMap( docs.docs[0].data() as Map<String,dynamic>);
       doctor.reference = docs.docs[0].reference;
       FirebaseFirestore.instance
           .collection("tblDoctor")
@@ -78,7 +77,7 @@ class UpdateService {
   String updateDoctorAppointments(String idNo, String transactionDate) {
     Doctor temp;
     SearchService().searchDoctorById(idNo).then((QuerySnapshot docs) {
-      temp = Doctor.fromMap( docs.docs[0].data as Map<String,dynamic>);
+      temp = Doctor.fromMap( docs.docs[0].data() as Map<String,dynamic>);
       temp.reference = docs.docs[0].reference;
       if (temp.appointments.contains(transactionDate)) {
         temp.appointments.remove(transactionDate);

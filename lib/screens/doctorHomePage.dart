@@ -19,6 +19,9 @@ class DoctorHomePage extends StatefulWidget {
 class _DoctorHomePageState extends State<DoctorHomePage> {
   Doctor _doctor;
 
+
+  String hospitalName = "", departmentName = "";
+
   _DoctorHomePageState(this._doctor);
 
   Hospital hospital = Hospital.empty();
@@ -29,27 +32,30 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
     super.initState();
     hospital = Hospital.empty();
     department = Department.empty();
+
     SearchService()
         .searchHospitalById(_doctor.hospitalId)
         .then((QuerySnapshot docs) {
-      this.hospital =
-          Hospital.fromMap(docs.docs[0].data as Map<String, dynamic>);
+      if (docs.docs.isNotEmpty) {
+        this.hospital =
+            Hospital.fromMap(docs.docs[0].data() as Map<String, dynamic>);
+      }
     });
     SearchService()
         .searchDepartmentById(_doctor.departmentId)
         .then((QuerySnapshot docs) {
-      this.department = Department.fromMap(docs.docs[0].data as Map<String, dynamic>);
+      if (docs.docs.isNotEmpty) {
+        this.department =
+            Department.fromMap(docs.docs[0].data() as Map<String, dynamic>);
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    String hospitalName = "", departmentName = "";
-    setState(() {
-      hospitalName = hospital.hospitalName.toString();
-      departmentName = department.departmentName;
-    });
+    hospitalName = hospital.hospitalName.toString();
+    departmentName = department.departmentName;
     return Scaffold(
         appBar: AppBar(
           title: Text("Doctor Homepage"),
@@ -163,7 +169,7 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
                 SizedBox(
                   height: 7.0,
                 ),
-                _appointmentsiGotuntuleButton(),
+                _appointmentsViewButton(),
                 SizedBox(
                   height: 7.0,
                 ),
@@ -228,7 +234,7 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
     );
   }
 
-  _appointmentsiGotuntuleButton() {
+  _appointmentsViewButton() {
     return Container(
       padding: EdgeInsets.all(1.0),
       width: 390.0,

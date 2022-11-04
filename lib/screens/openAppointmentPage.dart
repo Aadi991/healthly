@@ -93,9 +93,11 @@ class OpenAppointmentState extends State<OpenAppointment> {
                     child: Text("Click to Select Department"),
                     onPressed: () {
                       if (hospitalSelected) {
-                        doctorSelected = false;
-                        drImage = 0.0;
-                        dateSelected = false;
+                        setState(() {
+                          doctorSelected = false;
+                          drImage = 0.0;
+                          dateSelected = false;
+                        });
                         departmentNavigator(BuildDepartmentList(hospital));
                       } else {
                         alrtHospital(
@@ -278,9 +280,13 @@ class OpenAppointmentState extends State<OpenAppointment> {
         context, MaterialPageRoute(builder: (context) => page));
 
     if (doctor == null) {
-      doctorSelected = false;
+      setState(() {
+        doctorSelected = false;
+      });
     } else {
-      doctorSelected = true;
+      setState(() {
+        doctorSelected = true;
+      });
     }
   }
 
@@ -322,7 +328,7 @@ class OpenAppointmentState extends State<OpenAppointment> {
       context: context,
       initialDate: DateTime.now().add(Duration(days: 1)),
       firstDate: DateTime.now(),
-      lastDate: DateTime(2021),
+      lastDate: DateTime(2023),
     );
     appointmentDate = picked;
     timeDatejoint = null;
@@ -454,7 +460,7 @@ class OpenAppointmentState extends State<OpenAppointment> {
                 .searchDoctorById(doctor.idNo)
                 .then((QuerySnapshot docs) {
               Doctor temp = Doctor.fromMap(
-                  docs.docs[0].data as Map<String, dynamic>);
+                  docs.docs[0].data() as Map<String, dynamic>);
               if (temp.appointments.contains(timeDatejoint)) {
                 doctor.appointments.remove(timeDatejoint);
                 _admin.closedHours.remove(timeDatejoint);

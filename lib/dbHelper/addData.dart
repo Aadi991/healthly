@@ -26,7 +26,7 @@ class AddService {
     var appointments = [];
     FirebaseFirestore.instance.collection('tblDoctor').doc().set({
       'idNo': dr.idNo,
-      'id': dr.name,
+      'name': dr.name,
       'surname': dr.surname,
       'password': dr.password,
       'departmentId': department.departmentId,

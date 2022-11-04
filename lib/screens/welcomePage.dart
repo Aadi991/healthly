@@ -27,7 +27,7 @@ class WelcomePageState extends State
   final adminFormKey = GlobalKey<FormState>();
   User user = User.empty();
   Doctor doctor = Doctor.empty();
-  Admin admin = Admin(07007,"admin", "mieowCat",[]);
+  Admin admin = Admin(07007, "admin", "mieowCat", []);
   late Future<QuerySnapshot> incomingData;
 
   @override
@@ -35,8 +35,7 @@ class WelcomePageState extends State
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     //AddService().saveAdmin(admin);
-    this.incomingData =
-        FirebaseFirestore.instance.collection('tblUser').get();
+    this.incomingData = FirebaseFirestore.instance.collection('tblUser').get();
   }
 
   @override
@@ -73,14 +72,14 @@ class WelcomePageState extends State
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    pagePlanWithForm(idNoField(0, context), passwordField(0),
-                        "Welcome", userFormKey),
-                    registerButton()
-                  ])),
+                pagePlanWithForm(idNoField(0, context), passwordField(0),
+                    "Welcome", userFormKey),
+                registerButton()
+              ])),
           pagePlanWithForm(idNoField(1, context), passwordField(1),
               "Doctor Login", doctorFormKey),
-          pagePlanWithForm(
-              adminNicknameField(), passwordField(2), "Admin Login", adminFormKey)
+          pagePlanWithForm(adminNicknameField(), passwordField(2),
+              "Admin Login", adminFormKey)
         ],
       ),
     );
@@ -153,10 +152,10 @@ class WelcomePageState extends State
 
   Text pageHeaderPlan(String value) {
     return Text(
-        value,
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr,
-        style: TextStyle(fontSize: 40.0, fontWeight: FontWeight.bold),
+      value,
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+      style: TextStyle(fontSize: 40.0, fontWeight: FontWeight.bold),
     );
   }
 
@@ -185,8 +184,10 @@ class WelcomePageState extends State
   }
 
   Widget idNoField(int tabIndex, BuildContext context) {
+    var initialValue = "01470201232";
+    (tabIndex == 1) ? initialValue = "61329712321" : {};
     return TextFormField(
-      initialValue: "01470201232",
+      initialValue: initialValue,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: "T.R. Identity Number:",
@@ -251,16 +252,17 @@ class WelcomePageState extends State
 
         if (tabIndex == 0) {
           print(docs.docs[i].reference);
-          user = User.fromMap(docs.docs[i].data() as Map<String,dynamic>);
+          user = User.fromMap(docs.docs[i].data() as Map<String, dynamic>);
         } else if (tabIndex == 1) {
-          doctor = Doctor.fromMap(docs.docs[i].data() as Map<String,dynamic>);
+          doctor = Doctor.fromMap(docs.docs[i].data() as Map<String, dynamic>);
         } else if (tabIndex == 2) {
-          admin = Admin.fromMap(docs.docs[i].data() as Map<String,dynamic> );
+          admin = Admin.fromMap(docs.docs[i].data() as Map<String, dynamic>);
         }
       }
     });
     for (var item in tempSearchStore) {
-      if (item[searchWhere] == enteredId && item[searchPass] == incomingPassword) {
+      if (item[searchWhere] == enteredId &&
+          item[searchPass] == incomingPassword) {
         idNoVerify = true;
         passwordVerify = true;
       }
@@ -269,7 +271,7 @@ class WelcomePageState extends State
 
   Widget loginButton(GlobalKey<FormState> formKey) {
     return Container(
-      padding: EdgeInsets.only(top:30.0),
+      padding: EdgeInsets.only(top: 30.0),
       child: FlatButton(
         child: Text(
           "Login",
@@ -290,8 +292,7 @@ class WelcomePageState extends State
                   MaterialPageRoute(builder: (context) => UserHomePage(user)));
             }
           } else if (formKey == doctorFormKey) {
-            initiateSearch(
-                doctor.idNo, doctor.password, 1, 'idNo', 'password');
+            initiateSearch(doctor.idNo, doctor.password, 1, 'idNo', 'password');
 
             if (idNoVerify && passwordVerify) {
               Navigator.push(

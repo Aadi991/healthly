@@ -89,8 +89,8 @@ class AddDoctorState extends State with ValidationMixin {
                           if (hospitalSelected) {
                             departmentNavigator(BuildDepartmentList(hospital));
                           } else {
-                            alrtHospital(
-                                context, "You cannot select a department without selecting a hospital");
+                            alrtHospital(context,
+                                "You cannot select a department without selecting a hospital");
                           }
                         },
                       ),
@@ -162,7 +162,9 @@ class AddDoctorState extends State with ValidationMixin {
 
   Widget placeofBirthField() {
     return TextFormField(
-      decoration: InputDecoration(labelText: "Birthplace",labelStyle: TextStyle(fontWeight: FontWeight.bold)),
+      decoration: InputDecoration(
+          labelText: "Birthplace",
+          labelStyle: TextStyle(fontWeight: FontWeight.bold)),
       onSaved: (String? value) {
         doctor.placeOfBirth = value!;
       },
@@ -217,10 +219,10 @@ class AddDoctorState extends State with ValidationMixin {
             child: Text(raisedButtonText),
             onPressed: () {
               _selectDate(context).then((result) => setState(() {
-                raisedButtonText = dateOfBirth.toString().substring(0, 10);
-                doctor.dateOfBirth =
-                    dateOfBirth.toString().substring(0, 10);
-              }));
+                    raisedButtonText = dateOfBirth.toString().substring(0, 10);
+                    doctor.dateOfBirth =
+                        dateOfBirth.toString().substring(0, 10);
+                  }));
             },
           )
         ],
@@ -246,9 +248,13 @@ class AddDoctorState extends State with ValidationMixin {
         context, MaterialPageRoute(builder: (context) => page));
 
     if (hospital == null) {
-      hospitalSelected = false;
+      setState(() {
+        hospitalSelected = false;
+      });
     } else {
-      hospitalSelected = true;
+      setState(() {
+        hospitalSelected = true;
+      });
     }
   }
 
@@ -257,9 +263,13 @@ class AddDoctorState extends State with ValidationMixin {
         context, MaterialPageRoute(builder: (context) => page));
 
     if (department == null) {
-      departmentSelected = false;
+      setState(() {
+        departmentSelected = false;
+      });
     } else {
-      departmentSelected = true;
+      setState(() {
+        departmentSelected = true;
+      });
     }
   }
 
@@ -289,7 +299,7 @@ class AddDoctorState extends State with ValidationMixin {
                   child: Text(
                     textMessage,
                     style:
-                    TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                   ),
                 ))
           ],
@@ -334,35 +344,34 @@ class AddDoctorState extends State with ValidationMixin {
 
   _buildDoneButton() {
     return Container(
-        padding: EdgeInsets.only(top: 17.0),
-    child: RaisedButton(
-    child: Text(
-      "Complete",
-      style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
-    ),
-      onPressed: () {
-        if (hospitalSelected &&
-            departmentSelected &&
-        formKey.currentState!.validate()) {
-        formKey.currentState?.save();
-        SearchService()
-            .searchDoctorById(doctor.idNo)
-            .then((QuerySnapshot docs) {
-        if (docs.docs.isEmpty) {
-        AddService()
-            .saveDoctor(this.doctor, this.department, this.hospital);
-        Navigator.pop(context, true);
-        } else {
-        alrtHospital(context,
-        "A doctor with this ID already exists");
-        }
-        });
-        } else {
-        alrtHospital(context,
-        "To complete the transaction, you must fill in the required fields");
-        }
-      },
-    ),
+      padding: EdgeInsets.only(top: 17.0),
+      child: RaisedButton(
+        child: Text(
+          "Complete",
+          style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
+        ),
+        onPressed: () {
+          if (hospitalSelected &&
+              departmentSelected &&
+              formKey.currentState!.validate()) {
+            formKey.currentState?.save();
+            SearchService()
+                .searchDoctorById(doctor.idNo)
+                .then((QuerySnapshot docs) {
+              if (docs.docs.isEmpty) {
+                AddService()
+                    .saveDoctor(this.doctor, this.department, this.hospital);
+                Navigator.pop(context, true);
+              } else {
+                alrtHospital(context, "A doctor with this ID already exists");
+              }
+            });
+          } else {
+            alrtHospital(context,
+                "To complete the transaction, you must fill in the required fields");
+          }
+        },
+      ),
     );
   }
 }

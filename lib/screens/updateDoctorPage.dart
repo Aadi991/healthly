@@ -145,9 +145,13 @@ class UpdateDoctorState extends State with ValidationMixin {
         context, MaterialPageRoute(builder: (context) => page));
 
     if (hospital == null) {
-      hospitalSelected = false;
+      setState(() {
+        hospitalSelected = false;
+      });
     } else {
-      hospitalSelected = true;
+      setState(() {
+        hospitalSelected = true;
+      });
     }
   }
 
@@ -201,7 +205,9 @@ class UpdateDoctorState extends State with ValidationMixin {
   }
 
   _newDoctorName() {
+
     return TextFormField(
+      initialValue: doctor.name,
       decoration: InputDecoration(
           labelText: "Name :",
           labelStyle: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
@@ -214,6 +220,7 @@ class UpdateDoctorState extends State with ValidationMixin {
 
   _newDoctorLastname() {
     return TextFormField(
+      initialValue: doctor.surname,
       decoration: InputDecoration(
           labelText: "Last Name :",
           labelStyle: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
@@ -226,6 +233,7 @@ class UpdateDoctorState extends State with ValidationMixin {
 
   _newDoctorPassword() {
     return TextFormField(
+      initialValue: doctor.password,
       decoration: InputDecoration(
           labelText: "Password:",
           labelStyle: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
@@ -241,9 +249,13 @@ class UpdateDoctorState extends State with ValidationMixin {
         context, MaterialPageRoute(builder: (context) => page));
 
     if (department == null) {
-      departmentSelected = false;
+      setState(() {
+        departmentSelected = false;
+      });
     } else {
-      departmentSelected = true;
+      setState(() {
+        departmentSelected = true;
+      });
     }
   }
 
@@ -288,9 +300,13 @@ class UpdateDoctorState extends State with ValidationMixin {
         context, MaterialPageRoute(builder: (context) => page));
 
     if (doctor == null) {
-      doctorSelected = false;
+      setState(() {
+        doctorSelected = false;
+      });
     } else {
-      doctorSelected = true;
+      setState(() {
+        doctorSelected = true;
+      });
     }
   }
 
@@ -298,7 +314,7 @@ class UpdateDoctorState extends State with ValidationMixin {
     String textMessage = " ";
     if (selectedMih) {
       setState(() {
-        textMessage = this.doctor.name.toString() + " " + this.doctor.surname;
+        textMessage = "${doctor.name} ${doctor.surname}";
       });
       drImage = 1.0;
     } else {
